@@ -1,5 +1,5 @@
 import os
-from flask import Flask
+from flask import Flask, render_template
 from pymongo import MongoClient
 from dotenv import load_dotenv
 
@@ -11,7 +11,7 @@ db = cliente["legajo_docente"]
 
 @app.route("/")
 def inicio():
-    return "¡Hola! Flask funciona."
+    return render_template("index.html")
 
 @app.route("/prueba-db")
 def prueba_db():
