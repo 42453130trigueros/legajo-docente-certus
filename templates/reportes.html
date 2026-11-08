@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Reportes - Legajo Docente CERTUS</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-light">
+
+  <!-- ===== MENÚ SUPERIOR (igual que en docentes.html) ===== -->
+  <nav class="navbar navbar-expand-md navbar-dark bg-primary">
+    <div class="container">
+      <a class="navbar-brand" href="docentes.html">Legajo Docente CERTUS</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menu" aria-controls="menu"
+        aria-expanded="false" aria-label="Abrir menú">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse justify-content-end" id="menu">
+        <span class="navbar-text me-md-3">leonardo@certus.edu.pe</span>
+        <a class="btn btn-outline-light" href="login.html">Salir</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ===== CONTENIDO ===== -->
+  <div class="container my-4">
+
+    <!-- Pestañas: aquí la activa es Reportes -->
+    <ul class="nav nav-pills mb-3">
+      <li class="nav-item">
+        <a class="nav-link" href="docentes.html">Docentes</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link active" href="reportes.html">Reportes</a>
+      </li>
+    </ul>
+
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title mb-3">Reporte consolidado</h5>
+
+        <!--
+          Filtros  con el backend, al elegir carrera y periodo la tabla y los
+          indicadores se recalcularían solo con los docentes que cumplan el filtro
+          (ejemplo en Figma: Sistemas + 2025-II = 2 docentes).
+        -->
+        <div class="row g-3 mb-3">
+          <div class="col-12 col-md-6">
+            <label for="carrera" class="form-label">Carrera</label>
+            <select class="form-select" id="carrera" name="carrera">
+              <option selected>Todas</option>
+              <option>Administración</option>
+              <option>Contabilidad</option>
+              <option>Sistemas</option>
+            </select>
+          </div>
+          <div class="col-12 col-md-6">
+            <label for="periodo" class="form-label">Periodo</label>
+            <select class="form-select" id="periodo" name="periodo">
+              <option selected>Todos</option>
+              <option>2025-I</option>
+              <option>2025-II</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Indicadores (estos valores se calcularían con los datos reales) -->
+        <div class="row g-3 mb-3">
+          <div class="col-6 col-md-3">
+            <div class="card bg-light">
+              <div class="card-body">
+                <p class="fs-3 fw-bold text-primary mb-0">2</p>
+                <p class="mb-0">Docentes</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="card bg-light">
+              <div class="card-body">
+                <p class="fs-3 fw-bold text-primary mb-0">16.3</p>
+                <p class="mb-0">Nota promedio</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="card bg-light">
+              <div class="card-body">
+                <p class="fs-3 fw-bold text-primary mb-0">4.3</p>
+                <p class="mb-0">Encuesta (de 5)</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="card bg-light">
+              <div class="card-body">
+                <p class="fs-3 fw-bold text-primary mb-0">2</p>
+                <p class="mb-0">Supervisiones</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tabla: en celular se desliza hacia los lados (table-responsive) -->
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Docente</th>
+                <th>Carrera</th>
+                <th>Prom. eval.</th>
+                <th>Encuesta</th>
+                <th>Supervisiones</th>
+              </tr>
+            </thead>
+            <tbody>
+
+              <!-- AQUÍ IRÍA EL FOR: una fila por cada docente que cumpla el filtro -->
+              <tr>
+                <td>María Torres Quispe</td>
+                <td>Administración</td>
+                <td>17.8</td>
+                <td>4.6</td>
+                <td>1</td>
+              </tr>
+              <tr>
+                <td>Luis Ramos Peña</td>
+                <td>Sistemas</td>
+                <td>15.8</td>
+                <td>4.1</td>
+                <td>1</td>
+              </tr>
+              <!-- AQUÍ TERMINARÍA EL FOR -->
+
+            </tbody>
+          </table>
+        </div>
+
+        <button type="button" class="btn btn-primary">Imprimir / guardar PDF</button>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

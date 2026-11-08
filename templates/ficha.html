@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ficha del docente - Legajo Docente CERTUS</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-light">
+
+  <!-- ===== MENÚ SUPERIOR  ===== -->
+  <nav class="navbar navbar-expand-md navbar-dark bg-primary">
+    <div class="container">
+      <a class="navbar-brand" href="docentes.html">Legajo Docente CERTUS</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menu" aria-controls="menu"
+        aria-expanded="false" aria-label="Abrir menú">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse justify-content-end" id="menu">
+        <span class="navbar-text me-md-3">leonardo@certus.edu.pe</span>
+        <a class="btn btn-outline-light" href="login.html">Salir</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ===== CONTENIDO ===== -->
+  <div class="container my-4">
+    <div class="card">
+      <div class="card-body">
+
+        <!-- Botones superiores -->
+        <div class="row g-2 mb-3">
+          <div class="col-12 col-md-6 d-grid">
+            <a class="btn btn-outline-primary" href="docentes.html">← Volver</a>
+          </div>
+          <div class="col-12 col-md-6 d-grid">
+            <button type="button" class="btn btn-primary">Imprimir / guardar PDF</button>
+          </div>
+        </div>
+
+        <!-- Datos del docente (aquí irían los datos reales del docente elegido) -->
+        <h5>Ficha del docente</h5>
+        <p class="mb-0"><strong>María Torres Quispe</strong></p>
+        <p class="mb-0">mtorres@certus.edu.pe · Tel. 987 654 321</p>
+        <p>Carrera: Administración · Ingreso: 2019-03-01</p>
+
+        <hr>
+
+        <!-- ===== EVALUACIONES POR PERIODO  ===== -->
+        <h6>Evaluaciones por periodo</h6>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Periodo</th>
+              <th>Nota (0–20)</th>
+            </tr>
+          </thead>
+          <tbody>
+
+            <!-- AQUÍ IRÍA EL FOR: una fila por cada evaluación del docente -->
+            <tr>
+              <td>2025-I</td>
+              <td>17.5</td>
+            </tr>
+            <tr>
+              <td>2025-II</td>
+              <td>18</td>
+            </tr>
+            <!-- AQUÍ TERMINARÍA EL FOR -->
+
+          </tbody>
+        </table>
+
+        <p>Promedio: <strong>17.8</strong></p>
+
+        <form>
+          <div class="row g-2">
+            <div class="col-12 col-md-4">
+              <label for="eval-periodo" class="form-label">Periodo</label>
+              <input type="text" class="form-control" id="eval-periodo" name="periodo" placeholder="2026-I">
+            </div>
+            <div class="col-12 col-md-4">
+              <label for="eval-nota" class="form-label">Nota (0–20)</label>
+              <input type="number" class="form-control" id="eval-nota" name="nota" min="0" max="20" step="0.1">
+            </div>
+            <div class="col-12 col-md-4 d-grid align-self-end">
+              <button type="submit" class="btn btn-primary">Agregar evaluación</button>
+            </div>
+          </div>
+        </form>
+
+        <hr>
+
+        <!-- ===== FEEDBACK DE SUPERVISIONES  ===== -->
+        <h6>Feedback de supervisiones</h6>
+
+        <!-- AQUÍ IRÍA EL FOR: un bloque por cada supervisión del docente -->
+        <p class="mb-0"><strong>2025-05-12</strong> · <span class="text-muted">Dir. Académica</span></p>
+        <p>Buen manejo del aula; reforzar uso de casos.</p>
+        <!-- AQUÍ TERMINARÍA EL FOR -->
+
+        <form>
+          <div class="row g-2">
+            <div class="col-12 col-md-3">
+              <label for="sup-fecha" class="form-label">Fecha</label>
+              <input type="date" class="form-control" id="sup-fecha" name="fecha">
+            </div>
+            <div class="col-12 col-md-3">
+              <label for="sup-supervisor" class="form-label">Supervisor</label>
+              <input type="text" class="form-control" id="sup-supervisor" name="supervisor"
+                placeholder="Nombre o cargo">
+            </div>
+            <div class="col-12 col-md-4">
+              <label for="sup-comentario" class="form-label">Comentario</label>
+              <input type="text" class="form-control" id="sup-comentario" name="comentario"
+                placeholder="Feedback de la clase observada">
+            </div>
+            <div class="col-12 col-md-2 d-grid align-self-end">
+              <button type="submit" class="btn btn-primary">Agregar supervisión</button>
+            </div>
+          </div>
+        </form>
+
+        <hr>
+
+        <!-- ===== ENCUESTA ESTUDIANTIL ===== -->
+        <h6>Encuesta estudiantil</h6>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Periodo</th>
+              <th>Puntaje (0–5)</th>
+            </tr>
+          </thead>
+          <tbody>
+
+            <!-- AQUÍ IRÍA EL FOR: una fila por cada encuesta del docente -->
+            <tr>
+              <td>2025-II</td>
+              <td>4.6</td>
+            </tr>
+            <!-- AQUÍ TERMINARÍA EL FOR -->
+
+          </tbody>
+        </table>
+
+        <p>Promedio: <strong>4.6 / 5</strong></p>
+
+        <form>
+          <div class="row g-2">
+            <div class="col-12 col-md-4">
+              <label for="enc-periodo" class="form-label">Periodo</label>
+              <input type="text" class="form-control" id="enc-periodo" name="periodo" placeholder="2026-I">
+            </div>
+            <div class="col-12 col-md-4">
+              <label for="enc-puntaje" class="form-label">Puntaje (0–5)</label>
+              <input type="number" class="form-control" id="enc-puntaje" name="puntaje" min="0" max="5" step="0.1">
+            </div>
+            <div class="col-12 col-md-4 d-grid align-self-end">
+              <button type="submit" class="btn btn-primary">Agregar encuesta</button>
+            </div>
+          </div>
+        </form>
+
+        <hr>
+
+        <!-- Eliminar docente : con el backend pediría confirmación -->
+        <button type="button" class="btn btn-outline-danger">Eliminar docente</button>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
