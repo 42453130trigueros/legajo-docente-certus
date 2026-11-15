@@ -49,8 +49,16 @@ def login():
 
 @app.route("/docentes")
 def docentes():
-    lista = almacen.leer("docentes")          # aquí nace "lista": todos los docentes del archivo
-    return render_template("docentes.html", docentes=lista)
+    lista = almacen.leer("docentes")
+    escrito = request.args.get("buscar", "").strip()   # lo que se escribió en la barra
+    texto = escrito.lower()                            # lo mismo en minúsculas, para comparar
+    if texto:                                          # solo filtramos si escribió algo
+        encontrados = []
+        for d in lista:
+            if d["nombre"].lower().startswith(texto) or d["carrera"].lower().startswith(texto):
+                encontrados.append(d)
+        lista = encontrados
+    return render_template("docentes.html", docentes=lista, buscar=escrito)
 
 
 @app.route("/docentes/nuevo", methods=["GET", "POST"])

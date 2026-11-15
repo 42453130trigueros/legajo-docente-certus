@@ -49,11 +49,11 @@
     <!-- Buscador y botón de nuevo docente (RF2) -->
     <div class="card mb-3">
       <div class="card-body">
-        <form>
+        <form method="get">
           <label for="buscar" class="form-label">Buscar docente o carrera</label>
           <div class="row g-2">
             <div class="col-12 col-md-6">
-              <input type="text" class="form-control" id="buscar" name="buscar">
+              <input type="text" class="form-control" id="buscar" name="buscar" value="{{ buscar }}">
             </div>
             <div class="col-12 col-md-6 d-grid">
               <a class="btn btn-primary" href="/docentes/nuevo">+ Nuevo docente</a>
@@ -80,7 +80,9 @@
         </div>
       </div>
       {% else %}
-      <p class="text-muted">Aún no hay docentes registrados.</p>
+      <p class="text-muted">
+        {% if buscar %}Ningún docente coincide con «{{ buscar }}».{% else %}Aún no hay docentes registrados.{% endif %}
+      </p>
       {% endfor %}
 
     </div>
