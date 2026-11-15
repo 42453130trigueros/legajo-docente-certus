@@ -22,7 +22,7 @@
 
       <div class="collapse navbar-collapse justify-content-end" id="menu">
         <!-- Aquí iría el correo de la persona que inició sesión -->
-        <span class="navbar-text me-md-3">leonardo@certus.edu.pe</span>
+        <span class="navbar-text me-md-3">{{ session.get("correo", "") }}</span>
         <a class="btn btn-outline-light" href="/login">Salir</a>
       </div>
     </div>
@@ -66,25 +66,22 @@
     <!-- Lista de docentes: una tarjeta por docente -->
     <div class="row g-3">
 
-      <!--
-        AQUÍ IRÍA EL FOR:
-        por cada docente guardado en docentes.txt se repite la tarjeta de abajo
-        con su nombre, carrera, correo y promedio.
-        Por ahora dejamos una sola tarjeta de ejemplo.
-      -->
+      {% for docente in docentes %}
       <div class="col-12 col-md-6 col-lg-4">
         <div class="card h-100">
           <div class="card-body">
-            <h5 class="card-title">María Torres Quispe</h5>
-            <p class="card-text mb-1 text-muted">Administración</p>
-            <p class="card-text mb-1">mtorres@certus.edu.pe</p>
-            <p class="card-text">Promedio: <strong>17.8</strong></p>
+            <h5 class="card-title">{{ docente.nombre }}</h5>
+            <p class="card-text mb-1 text-muted">{{ docente.carrera }}</p>
+            <p class="card-text mb-1">{{ docente.correo }}</p>
+            <p class="card-text">Promedio: <strong>—</strong></p>
             <a class="btn btn-primary btn-sm" href="/docentes/ficha">Ficha</a>
-            <a class="btn btn-outline-primary btn-sm" href="/docentes/editar">Editar</a>
+            <a class="btn btn-outline-primary btn-sm" href="/docentes/{{ docente.id }}/editar">Editar</a>
           </div>
         </div>
       </div>
-      <!-- AQUÍ TERMINARÍA EL FOR -->
+      {% else %}
+      <p class="text-muted">Aún no hay docentes registrados.</p>
+      {% endfor %}
 
     </div>
   </div>
