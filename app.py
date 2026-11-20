@@ -1,11 +1,40 @@
 # Legajo Docente CERTUS - Paso 4: una direccion para cada pantalla.
 from flask import Flask, render_template, request, redirect, session
 
+import unicodedata
+
 import almacen
 
 app = Flask(__name__)
 # Clave para que Flask pueda "firmar" la memoria (session) de cada persona.
 app.secret_key = "legajo-certus-grupo5"
+
+def correo_valido(correo):
+    # Un correo de CERTUS tiene algo ANTES de "@certus.edu.pe", sin otra "@" ni espacios.
+    if not correo.endswith("@certus.edu.pe"):
+        return False
+    usuario = correo[:-len("@certus.edu.pe")]
+    return usuario != "" and "@" not in usuario and " " not in usuario
+
+
+def limpiar(texto):
+    # Pasa a minúsculas y quita las tildes: "María" -> "maria".
+    separado = unicodedata.normalize("NFD", texto.lower())
+    return "".join(c for c in separado if not unicodedata.combining(c))
+
+
+def coincide(buscado, valor):
+    # True si lo buscado es el inicio del texto o el inicio de alguna de sus palabras.
+    # Ej.: "medina" coincide con "Rosa Medina"; "maria" coincide con "María Torres".
+    buscado = limpiar(buscado)
+    valor = limpiar(valor)
+    if valor.startswith(buscado):
+        return True
+    for palabra in valor.split():
+        if palabra.startswith(buscado):
+            return True
+    return False
+
 
 def leer_formulario():
     # Toma lo que la persona escribió en el formulario.
@@ -22,7 +51,7 @@ def validar(datos, id_actual=None):
     # Devuelve un TEXTO con el problema, o None si todo está bien.
     if not datos["nombre"] or not datos["correo"] or not datos["carrera"]:
         return "Nombre, correo y carrera son obligatorios."
-    if not datos["correo"].endswith("@certus.edu.pe") or datos["correo"] == "@certus.edu.pe":
+    if not correo_valido(datos["correo"]):
         return "El correo debe terminar en @certus.edu.pe."
     for otro in almacen.leer("docentes"):
         if otro["correo"] == datos["correo"] and otro["id"] != id_actual:
@@ -39,7 +68,7 @@ def validar(datos, id_actual=None):
 def login():
     if request.method == "POST":
         correo = request.form["correo"].strip().lower()
-        if correo.endswith("@certus.edu.pe") and correo != "@certus.edu.pe":
+        if correo_valido(correo):
             session["correo"] = correo
             return redirect("/docentes")
         return render_template("login.html", error=True)
@@ -51,11 +80,10 @@ def login():
 def docentes():
     lista = almacen.leer("docentes")
     escrito = request.args.get("buscar", "").strip()   # lo que se escribió en la barra
-    texto = escrito.lower()                            # lo mismo en minúsculas, para comparar
-    if texto:                                          # solo filtramos si escribió algo
+    if escrito:                                        # solo filtramos si escribió algo
         encontrados = []
         for d in lista:
-            if d["nombre"].lower().startswith(texto) or d["carrera"].lower().startswith(texto):
+            if coincide(escrito, d["nombre"]) or coincide(escrito, d["carrera"]):
                 encontrados.append(d)
         lista = encontrados
     return render_template("docentes.html", docentes=lista, buscar=escrito)

@@ -32,11 +32,28 @@ def guardar_todo(nombre, registros):
             f.write(json.dumps(r, ensure_ascii=False) + "\n")
 
 
+def ruta_contador(nombre):
+    # "docentes" -> ".../datos/docentes_ultimo_id.txt" (guarda el último número entregado)
+    return os.path.join(CARPETA, nombre + "_ultimo_id.txt")
+
+
+def leer_contador(nombre):
+    if not os.path.exists(ruta_contador(nombre)):
+        return 0
+    with open(ruta_contador(nombre), "r", encoding="utf-8") as f:
+        texto = f.read().strip()
+    return int(texto) if texto else 0
+
+
 def agregar(nombre, registro):
-    # Le pone un id nuevo y lo guarda al final.
+    # Le pone un id nuevo y lo guarda al final. El número nunca se repite,
+    # aunque se haya borrado el último docente (se recuerda el último entregado).
     registros = leer(nombre)
-    ultimo = max([r["id"] for r in registros], default=0)
+    mayor = max([r["id"] for r in registros], default=0)
+    ultimo = max(mayor, leer_contador(nombre))
     registro["id"] = ultimo + 1
     registros.append(registro)
     guardar_todo(nombre, registros)
+    with open(ruta_contador(nombre), "w", encoding="utf-8") as f:
+        f.write(str(registro["id"]))
     return registro
