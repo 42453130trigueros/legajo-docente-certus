@@ -25,14 +25,14 @@
                 placeholder="usuario@certus.edu.pe">
 
               {% if error %}
-              <p class="text-danger small">Usa tu correo institucional (@certus.edu.pe).</p>
+              <p class="text-danger small">{{ error }}</p>
               {% endif %}
 
 
               <button type="submit" class="btn btn-primary mt-2">Ingresar</button>
             </form>
 
-            <p class="text-muted small mt-3 mb-0">Simulación: acepta cualquier correo que termine en @certus.edu.pe.</p>
+            <p class="text-muted small mt-3 mb-0">Prototipo: entra solo quien fue registrado con un rol (administrador, gestor o docente).</p>
           </div>
         </div>
       </div>

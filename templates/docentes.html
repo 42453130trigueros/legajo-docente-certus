@@ -22,7 +22,7 @@
 
       <div class="collapse navbar-collapse justify-content-end" id="menu">
         <!-- Aquí iría el correo de la persona que inició sesión -->
-        <span class="navbar-text me-md-3">{{ session.get("correo", "") }}</span>
+        <span class="navbar-text me-md-3">{{ session.get("correo", "") }} · {{ session.get("rol", "") }}</span>
         <a class="btn btn-outline-light" href="/login">Salir</a>
       </div>
     </div>
@@ -44,6 +44,11 @@
       <li class="nav-item">
         <a class="nav-link" href="/reportes">Reportes</a>
       </li>
+      {% if session.get("rol") == "administrador" %}
+      <li class="nav-item">
+        <a class="nav-link" href="/usuarios">Usuarios</a>
+      </li>
+      {% endif %}
     </ul>
 
     <!-- Buscador y botón de nuevo docente (RF2) -->
@@ -74,7 +79,7 @@
             <p class="card-text mb-1 text-muted">{{ docente.carrera }}</p>
             <p class="card-text mb-1">{{ docente.correo }}</p>
             <p class="card-text">Promedio: <strong>—</strong></p>
-            <a class="btn btn-primary btn-sm" href="/docentes/ficha">Ficha</a>
+            <a class="btn btn-primary btn-sm" href="/docentes/{{ docente.id }}/ficha">Ficha</a>
             <a class="btn btn-outline-primary btn-sm" href="/docentes/{{ docente.id }}/editar">Editar</a>
           </div>
         </div>

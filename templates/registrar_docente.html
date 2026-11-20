@@ -19,7 +19,7 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse justify-content-end" id="menu">
-                <span class="navbar-text me-md-3">{{ session.get("correo", "") }}</span>
+                <span class="navbar-text me-md-3">{{ session.get("correo", "") }} · {{ session.get("rol", "") }}</span>
                 <a class="btn btn-outline-light" href="/login">Salir</a>
             </div>
         </div>
@@ -36,6 +36,11 @@
             <li class="nav-item">
                 <a class="nav-link" href="/reportes">Reportes</a>
             </li>
+            {% if session.get("rol") == "administrador" %}
+            <li class="nav-item">
+              <a class="nav-link" href="/usuarios">Usuarios</a>
+            </li>
+            {% endif %}
         </ul>
 
         <!-- Formulario para registrar un docente nuevo -->

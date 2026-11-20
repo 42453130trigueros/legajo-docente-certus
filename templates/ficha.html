@@ -19,7 +19,7 @@
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse justify-content-end" id="menu">
-        <span class="navbar-text me-md-3">{{ session.get("correo", "") }}</span>
+        <span class="navbar-text me-md-3">{{ session.get("correo", "") }} · {{ session.get("rol", "") }}</span>
         <a class="btn btn-outline-light" href="/login">Salir</a>
       </div>
     </div>
@@ -32,19 +32,21 @@
 
         <!-- Botones superiores -->
         <div class="row g-2 mb-3">
+          {% if session.get("rol") != "docente" %}
           <div class="col-12 col-md-6 d-grid">
             <a class="btn btn-outline-primary" href="/docentes">← Volver</a>
           </div>
-          <div class="col-12 col-md-6 d-grid">
+          {% endif %}
+          <div class="col-12 {% if session.get(" rol") !="docente" %}col-md-6{% endif %} d-grid">
             <button type="button" class="btn btn-primary">Imprimir / guardar PDF</button>
           </div>
         </div>
 
         <!-- Datos del docente (aquí irían los datos reales del docente elegido) -->
         <h5>Ficha del docente</h5>
-        <p class="mb-0"><strong>María Torres Quispe</strong></p>
-        <p class="mb-0">mtorres@certus.edu.pe · Tel. 987 654 321</p>
-        <p>Carrera: Administración · Ingreso: 2019-03-01</p>
+        <p class="mb-0"><strong>{{ docente.nombre }}</strong></p>
+        <p class="mb-0">{{ docente.correo }}{% if docente.telefono %} · Tel. {{ docente.telefono }}{% endif %}</p>
+        <p>Carrera: {{ docente.carrera }}{% if docente.ingreso %} · Ingreso: {{ docente.ingreso }}{% endif %}</p>
 
         <hr>
 

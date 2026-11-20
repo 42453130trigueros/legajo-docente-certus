@@ -11,24 +11,62 @@ def datos_nuevos():
     almacen.CARPETA = tempfile.mkdtemp()
 
 
-def intentar_ingresar(correo):
+def usuario_registrado(correo, rol="gestor"):
+    """Deja a una persona ya registrada con un rol (sin pasar por la pantalla de usuarios)."""
+    almacen.agregar("usuarios", {"nombre": "Persona de prueba", "correo": correo, "rol": rol})
+
+
+def cliente_con_rol(rol, correo="persona@certus.edu.pe"):
+    """Un navegador que YA ingresó con ese rol. Sirve para probar a qué pantallas puede entrar."""
+    cliente = legajo.app.test_client()
+    with cliente.session_transaction() as sesion:
+        sesion["correo"] = correo
+        sesion["rol"] = rol
+    return cliente
+
+
+def puede_abrir(cliente, direccion):
+    """True si la pantalla se abre; False si el sistema lo manda a otro lado.
+    Si la pantalla ni siquiera existe, la prueba falla (así no sale verde por error)."""
+    respuesta = cliente.get(direccion)
+    assert respuesta.status_code != 404, "la pantalla " + direccion + " no existe"
+    return respuesta.status_code == 200
+
+
+def ingresar(correo):
     """Escribe el correo en el login. Devuelve True si el sistema deja entrar."""
     respuesta = legajo.app.test_client().post("/login", data={"correo": correo})
     return respuesta.status_code == 302
 
 
+def intentar_ingresar(correo, rol="gestor"):
+    """Igual que ingresar, pero la persona ya está registrada con un rol.
+    Así las Reglas 01 solo prueban cómo está escrito el correo."""
+    datos_nuevos()
+    usuario_registrado(correo.strip().lower(), rol)
+    return ingresar(correo)
+
+
 def registrar_docente(nombre="Ana Ruiz", correo="ana@certus.edu.pe", carrera="Sistemas", telefono="", ingreso=""):
-    """Llena el formulario 'Registrar docente'. Devuelve True si el docente se guardó."""
+    """Llena el formulario 'Registrar docente' (como gestor). Devuelve True si el docente se guardó."""
     datos = {"nombre": nombre, "correo": correo, "carrera": carrera, "telefono": telefono, "ingreso": ingreso}
-    respuesta = legajo.app.test_client().post("/docentes/nuevo", data=datos)
+    respuesta = cliente_con_rol("gestor").post("/docentes/nuevo", data=datos)
     return respuesta.status_code == 302
 
 
 def corregir_docente(id, nombre="Ana Ruiz", correo="ana@certus.edu.pe", carrera="Sistemas"):
-    """Llena el formulario 'Editar docente'. Devuelve True si los cambios se guardaron."""
+    """Llena el formulario 'Editar docente' (como gestor). Devuelve True si los cambios se guardaron."""
     datos = {"nombre": nombre, "correo": correo, "carrera": carrera, "telefono": "", "ingreso": ""}
-    respuesta = legajo.app.test_client().post(f"/docentes/{id}/editar", data=datos)
+    respuesta = cliente_con_rol("gestor").post(f"/docentes/{id}/editar", data=datos)
     return respuesta.status_code == 302
+
+
+def registrar_usuario(nombre="Ana Ruiz", correo="ana@certus.edu.pe", rol="gestor", quien="administrador"):
+    """Llena el formulario 'Registrar usuario'. Devuelve True si el usuario se guardó."""
+    datos = {"nombre": nombre, "correo": correo, "rol": rol}
+    respuesta = cliente_con_rol(quien).post("/usuarios/nuevo", data=datos)
+    assert respuesta.status_code != 404, "la pantalla /usuarios/nuevo no existe"
+    return respuesta.status_code == 302 and respuesta.headers["Location"].endswith("/usuarios")
 
 
 def ids_guardados():
@@ -37,7 +75,7 @@ def ids_guardados():
 
 def buscar(texto):
     """Escribe en el buscador y devuelve lo que aparece en pantalla."""
-    return legajo.app.test_client().get("/docentes?buscar=" + texto).get_data(as_text=True)
+    return cliente_con_rol("gestor").get("/docentes?buscar=" + texto).get_data(as_text=True)
 
 
 # ===================== REGLA 01: solo entra correo @certus.edu.pe =====================
@@ -204,13 +242,115 @@ def test_regla06_encuentra_por_apellido():
 # ============ REGLA 07: corregir un docente que no existe vuelve a la lista ============
 def test_regla07_abrir_un_docente_que_no_existe_vuelve_a_la_lista():
     datos_nuevos()
-    respuesta = legajo.app.test_client().get("/docentes/99/editar")
+    respuesta = cliente_con_rol("gestor").get("/docentes/99/editar")
     assert respuesta.status_code == 302 and respuesta.headers["Location"].endswith("/docentes")
 
 def test_regla07_guardar_un_docente_que_no_existe_no_crea_nada():
     datos_nuevos()
     corregir_docente(99, nombre="Fantasma", correo="f@certus.edu.pe")
     assert almacen.leer("docentes") == []
+
+
+# ============ REGLA 08: solo entra quien está registrado con un rol ============
+def test_regla08_entra_el_administrador_inicial():
+    datos_nuevos()
+    entra = ingresar("admin@certus.edu.pe")
+    assert entra == True
+
+def test_regla08_no_entra_un_correo_de_certus_sin_rol():
+    datos_nuevos()
+    entra = ingresar("ana@certus.edu.pe")
+    assert entra == False
+
+def test_regla08_no_abre_la_lista_sin_haber_ingresado():
+    datos_nuevos()
+    sin_ingresar = legajo.app.test_client()
+    assert puede_abrir(sin_ingresar, "/docentes") == False
+
+def test_regla08_entra_un_registrado_aunque_escriba_mayusculas():
+    datos_nuevos()
+    usuario_registrado("ana@certus.edu.pe", "gestor")
+    entra = ingresar("  ANA@CERTUS.EDU.PE ")
+    assert entra == True
+
+
+# ============ REGLA 09: cada persona ve solo lo de su rol ============
+def test_regla09_el_gestor_entra_a_la_lista_de_docentes():
+    datos_nuevos()
+    assert puede_abrir(cliente_con_rol("gestor"), "/docentes") == True
+
+def test_regla09_el_gestor_no_entra_a_usuarios():
+    datos_nuevos()
+    assert puede_abrir(cliente_con_rol("gestor"), "/usuarios") == False
+
+def test_regla09_el_docente_no_entra_a_usuarios():
+    datos_nuevos()
+    assert puede_abrir(cliente_con_rol("docente"), "/usuarios") == False
+
+def test_regla09_el_docente_no_entra_a_la_lista_de_docentes():
+    datos_nuevos()
+    assert puede_abrir(cliente_con_rol("docente"), "/docentes") == False
+
+def test_regla09_el_docente_no_entra_a_reportes():
+    datos_nuevos()
+    assert puede_abrir(cliente_con_rol("docente"), "/reportes") == False
+
+
+# ============ REGLA 10: un docente solo ve su propia ficha ============
+def test_regla10_el_docente_ve_su_propia_ficha():
+    datos_nuevos()
+    registrar_docente(nombre="Ana", correo="ana@certus.edu.pe")           # ficha número 1
+    ana = cliente_con_rol("docente", "ana@certus.edu.pe")
+    assert puede_abrir(ana, "/docentes/1/ficha") == True
+
+def test_regla10_el_docente_no_ve_la_ficha_de_otro():
+    datos_nuevos()
+    registrar_docente(nombre="Ana", correo="ana@certus.edu.pe")           # ficha número 1
+    registrar_docente(nombre="Beto", correo="beto@certus.edu.pe")         # ficha número 2
+    ana = cliente_con_rol("docente", "ana@certus.edu.pe")
+    assert puede_abrir(ana, "/docentes/2/ficha") == False
+
+def test_regla10_un_docente_sin_ficha_no_entra():
+    datos_nuevos()
+    usuario_registrado("beto@certus.edu.pe", "docente")                   # tiene rol, pero no tiene ficha
+    entra = ingresar("beto@certus.edu.pe")
+    assert entra == False
+
+
+# ============ REGLA 11: solo el administrador registra usuarios, y el rol es uno de los tres ============
+def test_regla11_el_administrador_registra_un_usuario():
+    datos_nuevos()
+    guardado = registrar_usuario(correo="ana@certus.edu.pe", rol="gestor", quien="administrador")
+    assert guardado == True
+
+def test_regla11_el_gestor_no_puede_registrar_usuarios():
+    datos_nuevos()
+    guardado = registrar_usuario(correo="ana@certus.edu.pe", quien="gestor")
+    assert guardado == False
+
+def test_regla11_no_registra_un_rol_que_no_existe():
+    datos_nuevos()
+    guardado = registrar_usuario(rol="jefe")
+    assert guardado == False
+
+def test_regla11_no_registra_un_correo_que_no_es_de_certus():
+    datos_nuevos()
+    guardado = registrar_usuario(correo="ana@gmail.com")
+    assert guardado == False
+
+
+# ============ REGLA 12: no hay dos usuarios con el mismo correo ============
+def test_regla12_no_registra_un_correo_repetido():
+    datos_nuevos()
+    registrar_usuario(correo="ana@certus.edu.pe")
+    guardado = registrar_usuario(nombre="Otra Persona", correo="ana@certus.edu.pe")
+    assert guardado == False
+
+def test_regla12_no_registra_el_mismo_correo_en_mayusculas():
+    datos_nuevos()
+    registrar_usuario(correo="ana@certus.edu.pe")
+    guardado = registrar_usuario(nombre="Otra Persona", correo="ANA@CERTUS.EDU.PE")
+    assert guardado == False
 
 
 # ============ Ejecutor simple: no necesita pytest ============
