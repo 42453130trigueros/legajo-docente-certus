@@ -1,0 +1,1 @@
+{"nombre": "Ronal Aguilar", "correo": "raguilar@certus.edu.pe", "carrera": "Administración", "telefono": "123456789", "ingreso": "2026-11-19", "id": 1}

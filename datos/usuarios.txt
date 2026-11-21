@@ -1,0 +1,4 @@
+{"nombre": "Administrador", "correo": "admin@certus.edu.pe", "rol": "administrador", "id": 1}
+{"nombre": "Leonardo Trigueros", "correo": "ltrigueros@certus.edu.pe", "rol": "gestor", "id": 2}
+{"nombre": "Ronal Aguilar", "correo": "raguilar@certus.edu.pe", "rol": "docente", "id": 3}
+{"nombre": "Aaron Valdez", "correo": "avaldez@certus.edu.pe", "rol": "docente", "id": 4}
